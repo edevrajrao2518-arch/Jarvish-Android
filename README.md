@@ -1,33 +1,17 @@
-# Jarvish for Android
+# Jarvis for Android
 
-Jarvish is a local-first Android voice assistant prototype. The first build focuses on privacy and safe, explicit actions.
-
-## Privacy and safety commitments
-
-- The app requests microphone access only when you tap **Activate voice**.
-- It uses Android's on-device speech recognizer only. If your phone has no on-device recognizer, voice mode stays off and you can type instead.
-- The app has no Internet permission. Chat text and recognized speech are not uploaded or saved by Jarvish.
-- Web searches open only after a confirmation screen. The search text is then sent to the browser/search provider you use.
-- Payments, transfers, banking tasks, and arbitrary shell commands are refused. Jarvish does not collect banking information.
-- It does not read other apps, capture the screen, send messages, place calls, or silently change device settings.
-- Android permissions and services such as Accessibility, screen capture, device administration, and contacts are intentionally not enabled in this starter project.
-
-No software can promise that it will never be hacked. This starter reduces exposure by avoiding network access, persistent conversation storage, and broad device permissions. Device speech recognition availability and its provider are controlled by Android and the phone manufacturer.
-
-## Available in this starter
-
-- Voice input when on-device Android speech recognition is available
-- Spoken replies using Android text-to-speech
-- Time and date responses
-- Open a named installed app
-- Raise or lower media volume
-- Web search after an on-screen disclosure and confirmation
-- Basic greeting in Hindi, English, Spanish, or French
-
-The broader features from the product brief—open-ended reasoning, more languages, document and screen understanding, messaging, calendar, integrations, and hands-free cross-app navigation—are not implemented in this starter. Each will need its own privacy design, platform permission, and user-confirmation flow. Adding an online AI service would send selected data off the phone, so it is excluded until a separate, explicit privacy choice is designed.
+This is an early, installable debug build of the voice assistant. It supports speech and typed commands, text-to-speech, launching apps, drafting calls and WhatsApp messages for the user to confirm, timers, web search, volume, brightness, and selected Android navigation actions.
 
 ## Build
 
-The app supports Android 12 (API 31) and later. In Android Studio, open this folder with Android SDK 36 and JDK 17 installed, sync the Gradle project, then choose **Build > Build App Bundle(s) / APK(s) > Build APK(s)**.
+The GitHub Actions workflow builds `app-debug.apk` with JDK 17, Gradle 8.7, and Android SDK 34. The artifact is debug-signed for testing and is not a Play Store release.
 
-The GitHub Actions workflow in `.github/workflows/build-apk.yml` builds a debug APK and publishes it as the `jarvish-debug-apk` artifact for 14 days. This workspace did not have Java, Gradle, or Android SDK tools when the starter was created, so the APK must be built on GitHub Actions or a computer with Android Studio installed.
+## Privacy and security
+
+- The microphone is requested only when the user taps the orb. Speech recognition is provided by Android's configured recognition service; that service may process audio outside the phone depending on the device and settings.
+- If the user adds an Anthropic API key in the app, assistant prompts and up to the recent conversation context are sent to Anthropic over HTTPS. The key is stored using Android encrypted preferences and is not included in this repository or build.
+- Common financial terms in several languages and long numeric identifiers are blocked locally before the AI request. This filter cannot recognize every wording or language; do not enter bank details, passwords, or other sensitive information.
+- The accessibility service is opt-in and configured without access to screen or window content. It only requests Android global navigation actions.
+- Calls and WhatsApp messages are opened as drafts for the user to confirm. The app does not initiate payments or bank transactions.
+
+This starter has not had a formal security audit. A debug APK is for personal testing, not a guarantee that the app is unhackable or appropriate for sensitive financial use.

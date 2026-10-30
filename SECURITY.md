@@ -1,26 +1,15 @@
-# Jarvish security and privacy rules
+# Security notes
 
-These are product requirements, not claims that software is impossible to compromise.
+## Data flow
 
-## Hard rules
+The app asks Android's speech recognition service to transcribe speech only after the user taps the voice orb. Depending on Android's configured recognizer and device settings, audio may be processed by that provider.
 
-1. No payments, purchases, money transfers, cryptocurrency actions, or financial transactions.
-2. No collection, storage, or sharing of bank, card, account, password, or one-time-code details.
-3. Never run arbitrary shell commands or let a language model invent an executable command.
-4. No network permission or cloud AI in the starter. Any future online feature needs a separate, clear opt-in that says what leaves the phone and who receives it.
-5. Ask before an action that sends a message, shares a file, searches the web, changes a sensitive setting, or affects another app.
-6. Request Android permissions only when the user starts the feature that needs them. Explain the permission first.
-7. Keep conversation history in memory only. Do not include conversation text, microphone audio, files, or screen content in crash reports or analytics.
-8. If a feature cannot honor these rules, keep it unavailable and explain why.
+When an Anthropic API key is configured, assistant prompts and up to the most recent eight conversation messages are sent to `api.anthropic.com` over HTTPS. The key is stored in Android encrypted preferences. Do not put API keys in source files, Git history, or screenshots.
 
-## Android access boundaries
+Common financial vocabulary in several languages and long numeric identifiers are filtered on-device before AI requests. The list is heuristic and incomplete; it cannot guarantee detection in every language or phrasing. Do not enter bank credentials, payment codes, or other sensitive financial details.
 
-Android does not let an ordinary app silently control every setting or read and operate every other app. App switching, cross-app interaction, screen capture, device locking, shutdown, calls, messages, and calendars use distinct system APIs and permissions. Jarvish must disclose each capability and obtain the user's choice at the point it is enabled. Some actions remain unavailable to ordinary apps or require confirmation in the destination app.
+The accessibility service is opt-in and declares `canRetrieveWindowContent=false`. It does not read screen text. Calls and WhatsApp messages are opened as user-confirmed drafts. The app does not perform payments or bank transactions.
 
-## Starter behavior
+## Reporting issues
 
-The starter asks for microphone permission only when voice mode is tapped. It asks Android for on-device recognition and refuses network speech recognition. It has no `INTERNET` permission, no background microphone service, no file access, no contacts access, no accessibility service, no screen-capture permission, and no analytics. A web search is handed to the user's browser only after Jarvish displays the query and asks for confirmation. Chat history is kept only in the current app session.
-
-## Future-feature gate
-
-Before adding documents, screenshots, messaging, email, calendar, web search, or third-party integrations, document the data involved, where it is processed, what permission is needed, how it is deleted, and which step the user confirms. Never automatically forward data that looks financial or secret. Do not treat keyword detection as a guarantee that sensitive data has been identified.
+Do not include private keys, personal data, or financial information in a public issue. This starter has not received a formal security audit.
