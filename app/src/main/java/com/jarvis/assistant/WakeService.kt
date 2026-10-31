@@ -55,9 +55,9 @@ class WakeService : Service(), TextToSpeech.OnInitListener {
         sr?.destroy(); sr = null
         if (Build.VERSION.SDK_INT < 31 || !SpeechRecognizer.isOnDeviceRecognitionAvailable(this)) {
             Bus.post(0, "On-device speech recognition isn’t available. Voice is off to keep audio private; you can still type commands.")
-            Bus.setState(0); stopSelf(); return
+            Bus.updateState(0); stopSelf(); return
         }
-        Bus.setState(if (System.currentTimeMillis() < awakeUntil) 2 else 1)
+        Bus.updateState(if (System.currentTimeMillis() < awakeUntil) 2 else 1)
         sr = SpeechRecognizer.createOnDeviceSpeechRecognizer(this).apply {
             setRecognitionListener(object : RecognitionListener {
                 override fun onReadyForSpeech(p: Bundle?) {}
@@ -97,7 +97,7 @@ class WakeService : Service(), TextToSpeech.OnInitListener {
     fun handleText(t: String) { Bus.post(1, t); speak(try { Brain.run(this, t) } catch (e: Exception) { "Sorry, something went wrong." }) }
 
     private fun speak(t: String) {
-        Bus.post(0, t); speaking = true; Bus.setState(3)
+        Bus.post(0, t); speaking = true; Bus.updateState(3)
         sr?.destroy(); sr = null; h.removeCallbacksAndMessages(null)
         if (!ttsReady) { h.postDelayed({ afterSpeak() }, 800); return }
         tts.speak(t, TextToSpeech.QUEUE_FLUSH, null, "u")
@@ -108,6 +108,7 @@ class WakeService : Service(), TextToSpeech.OnInitListener {
     override fun onDestroy() {
         running = false; h.removeCallbacksAndMessages(null); sr?.destroy()
         if (::tts.isInitialized) tts.shutdown()
-        Bus.service = null; Bus.setState(0); super.onDestroy()
+        Bus.service = null; Bus.updateState(0); super.onDestroy()
     }
 }
+

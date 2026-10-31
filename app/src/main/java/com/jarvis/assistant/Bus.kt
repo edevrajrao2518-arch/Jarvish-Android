@@ -7,5 +7,6 @@ object Bus {
     var service: WakeService? = null
     var onChange: (() -> Unit)? = null
     fun post(who: Int, text: String) { log.add(who to text); onChange?.invoke() }
-    fun setState(s: Int) { state = s; onChange?.invoke() }
+    fun updateState(s: Int) { state = s; onChange?.invoke() }
 }
+
