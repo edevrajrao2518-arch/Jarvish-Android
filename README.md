@@ -1,15 +1,15 @@
 # Jarvis Android
 
-A small Android voice shortcut assistant with a local session log and a Jarvis inspired interface.
+A privacy-focused Android voice assistant prototype with a Jarvis-inspired interface and launcher icon.
 
-## Privacy and capabilities
-- No internet permission, cloud AI API, API key, Accessibility service, or stored conversation history.
-- Voice recognition uses Android's on-device recognizer only when the device provides one. Otherwise, use typed commands.
-- Android asks for microphone access only when you tap the microphone.
-- The session log exists in memory and disappears when the app closes.
-- Opening a browser search, WhatsApp draft, dialer, or another installed app hands control to that app. Review any message or call there before sending or placing it.
-- Jarvis cannot read your screen or control Home, Back, Recents, shutdown, or protected settings.
+## Build with GitHub Actions
 
-Commands include app launch, time/date, volume, display settings, dialer, WhatsApp draft, web search, and timer.
+Push to `main` or run **Build Jarvis APK** from the repository's Actions tab. Download the `Jarvis-APK` artifact from a successful run.
 
-Builds from GitHub Actions are debug APKs for sideloading, not Play Store releases.
+## Privacy and platform limits
+
+- No cloud API key is required or bundled.
+- Voice recognition uses Android's on-device speech recognizer when the device supports it. If unavailable, use typed commands; the app does not fall back to network recognition.
+- No Accessibility screen-reading or overlay permission is requested. Some device actions use Android's Accessibility service and require the user to enable it explicitly in Settings.
+- Android and manufacturer restrictions control which system actions an app can perform. The app cannot silently control every phone function.
+- This is a debug APK for personal testing. It is not a Play Store release and is not signed with a private release key.
