@@ -1,0 +1,46 @@
+name: Build Jarvis Windows installer
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'windows/JarvisWindows/**'
+      - '.github/workflows/build-windows.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: windows/JarvisWindows
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Python dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+      - name: Download bundled offline speech model
+        shell: pwsh
+        run: |
+          Invoke-WebRequest 'https://alphacephei.com/vosk/models/vosk-model-small-en-in-0.4.zip' -OutFile model.zip
+          Expand-Archive model.zip -DestinationPath .
+          Rename-Item vosk-model-small-en-in-0.4 model
+      - name: Package Jarvis
+        run: >-
+          pyinstaller --noconfirm --clean --onedir --windowed --name Jarvis
+          --icon jarvis.ico --collect-all vosk --collect-all sounddevice
+          --collect-all _sounddevice_data --hidden-import pyttsx3.drivers
+          --hidden-import pyttsx3.drivers.sapi5 --add-data 'model;model' jarvis.py
+      - name: Build installer
+        shell: pwsh
+        run: |
+          choco install innosetup -y --no-progress
+          & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' installer.iss
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Jarvis-Windows-Setup
+          path: windows/JarvisWindows/Output/JarvisSetup.exe
+          if-no-files-found: error
+          retention-days: 14
